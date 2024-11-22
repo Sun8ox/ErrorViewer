@@ -1,0 +1,14 @@
+.main-container[b-zuamuxx2kr] {
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: row;
+}
+
+.content[b-zuamuxx2kr] {
+    overflow: scroll;
+    width: 100%;
+    height: 100dvh;
+    margin: 2vw;
+    
+}
