@@ -135,3 +135,4 @@
 /Users/sun8ox/Programming/C#/ErrorViewer_MVC/ErrorViewer/bin/Debug/net8.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.resources.dll
 /Users/sun8ox/Programming/C#/ErrorViewer_MVC/ErrorViewer/obj/Debug/net8.0/scopedcss/Views/Shared/_DashLayout.cshtml.rz.scp.css
 /Users/sun8ox/Programming/C#/ErrorViewer_MVC/ErrorViewer/obj/Debug/net8.0/scopedcss/projectbundle/ErrorViewer.bundle.scp.css
+/Users/sun8ox/Programming/C#/ErrorViewer_MVC/ErrorViewer/obj/Debug/net8.0/ErrorViewer.sourcelink.json

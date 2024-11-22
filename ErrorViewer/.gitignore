@@ -1,1 +1,7 @@
 ErrorViewerDB.db
+ErrorViewerDB.db-shm
+ErrorViewerDB.db-wal
+Migrations/
+.DS_Store
+bin/
+obj/
