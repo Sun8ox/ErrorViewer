@@ -1,1 +1,2 @@
-Idk I just wanted to learn more about ASP.NET MVC, Javascript, JQuery, Bootstrap and EntityFramework.
+# ErrorViewer
+## Idk I just wanted to learn more about ASP.NET MVC, JQuery, Bootstrap and EntityFramework.
