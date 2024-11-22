@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - ErrorViewer</title>
+    
+    <link rel="icon" href="~/lib/bootstrap-icons/database.svg" />
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/ErrorViewer.styles.css" asp-append-version="true"/>
+    
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css"/>
+</head>
+<body>
+<main class="main-container">
+    <aside class="fs-4 p-3 bg-primary text-white vh-100 d-flex flex-column justify-content-between">
+        <div class="d-flex flex-column">
+            <a asp-controller="Dashboard" asp-action="Index" class="fs-2 text-white text-decoration-none pt-3">
+                ErrorViewer
+            </a>
+            <a asp-controller="Dashboard" asp-action="Overview" class="text-white text-decoration-none pt-3">
+                <i class="bi bi-view-list"></i>
+                Overview
+            </a>
+            <a asp-controller="Dashboard" asp-action="Explorer" class="text-white text-decoration-none pt-3">
+                <i class="bi bi-search"></i>
+                Explorer
+            </a>
+            <a asp-controller="Dashboard" asp-action="Sources" class="text-white text-decoration-none pt-3">
+                <i class="bi bi-database"></i>
+                Sources
+            </a>
+        </div>
+        <div class="d-flex flex-column">
+            <a asp-controller="Dashboard" asp-action="Account" class="text-white text-decoration-none pt-3">
+                <i class="bi bi-person"></i>
+                Accounts
+            </a>
+            <a asp-controller="Auth" asp-action="Logout" class="text-white text-decoration-none pt-3">
+                <i class="bi bi-box-arrow-left"></i>
+                Logout
+            </a>
+        </div>
+    </aside>
+    <div class="content">
+        @RenderBody()
+        <script src="/js/functions.js"></script>
+    </div>    
+</main>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,181 @@
+@model User
+
+@{
+    ViewBag.Title = "Sources";
+    Layout = "_DashLayout";
+}
+
+<h1>Sources</h1>
+<h4 class="text-muted">
+    Add or remove sources to get info from. You can pick from <strong>MySQL</strong>, <strong>SQLite</strong> and <strong>csv</strong>.
+</h4>
+<br/>
+<nav class="w-100 m-1 my-1 d-flex flex-row gap-3">
+    @if (Model.isAdmin)
+    {
+        <button data-bs-toggle="modal" data-bs-target="#addSourceModal" class="btn btn-dark w-auto rounded-3 text-white border-0 px-3 py-1">
+            Add source <i class="bi bi-plus"></i>
+        </button>
+    }
+    <button onclick="loadSources()" class="btn btn-dark w-auto rounded-3 text-white border-0 px-3 py-1">
+        Refresh <i class="bi bi-arrow-clockwise"></i>
+    </button>
+</nav>
+
+<table class="table mt-2" id="sources">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Cache time</th>
+            <th>Error row</th>
+            <th class="w-25">Actions</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        <tr>
+            <td>Database name</td>
+            <td>Database type</td>
+            <td>30000</td>
+            <td>ecode</td>
+            <td>
+                <button class="btn btn-dark rounded-3 text-white border-0 px-3 py-1">
+                    Edit <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-danger rounded-3 text-white border-0 px-3 py-1">
+                    Remove <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+@if (Model.isAdmin)
+{
+    <div class="modal" id="addSourceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closeAddSourceModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Api" asp-action="addSource" id="addSourceForm">
+                    <label for="name-addS" class="form-label">Source name</label>
+                    <input type="text" name="Name" id="name-addS" class="form-control mb-3" placeholder="Source name">
+
+                    <label for="type-addS" form="type-addS" class="form-label">Source type</label>
+                    <select name="Type" id="type-addS" class="form-control mb-3" >
+                        <option value="RemoteDatabase">MySQL</option>
+                        <option value="LocalDatabase">SQLite</option>
+                        <option value="File" selected>CSV (file)</option>
+                    </select>
+
+                    <label for="connectionString-addS" class="form-label">Connection string</label>
+                    <input type="text" name="ConnectionString" id="connectionString-addS" class="form-control mb-3" placeholder="Connection string">
+                    
+                    <p class="form-text">
+                        Learn more about connection strings <a href="/Help/ConnectionStrings" target="_blank">here</a>
+                    </p>
+                    
+                    <label for="errorRow-addS" class="form-label">Error row name</label>
+                    <input type="text" class="form-control" name="errorRow" id="errorRow-addS" placeholder="Error row name" value="ecode">
+                    <p class="form-text">
+                        Which error will be used in analysing the data.
+                    </p>
+                    
+                    <label for="cacheTime-addS" class="form-label">Cache time</label>
+                    <input id="cacheTime-addS" class="form-control" name="cacheTime" type="number" value="60000" placeholder="Default: 60000">
+                    <p class="form-text">
+                        Time in milliseconds to cache the data
+                    </p>
+                </form>
+
+
+            </div>
+            <div class="modal-footer" id="addSourceFooter">
+                <button type="button" class="btn btn-secondary" onclick="closeAddSourceModal()" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createSource()" >Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+    <!-- TODO -->
+<div class="modal" id="editSourceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit source</h5>
+                <button type="button" class="btn-close" onclick="closeEditSourceModal()" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="editSourceForm">
+                    <label for="name-editS">Source name</label>
+                    <input type="text" name="Name" id="name-editS" class="form-control mb-3" placeholder="Source name" readonly>
+
+                    <label for="type-editS">Source type</label>
+                    <select name="Type" id="type-editS" class="form-control mb-3" >
+                        <option value="RemoteDatabase">MySQL</option>
+                        <option value="LocalDatabase">SQLite</option>
+                        <option value="File">CSV (file)</option>
+                    </select>
+
+                    <label for="connectionString-editS">Connection string</label>
+                    <p class="form-text">
+                        Learn more about connection strings <a href="/Help/ConnectionStrings" target="_blank">here</a>
+                    </p>
+                    <input type="text" name="ConnectionString-editS" class="form-control mb-3" placeholder="Connection string">
+                </form>
+
+
+            </div>
+            <div class="modal-footer" id="editSourceFooter">
+                <button type="button" class="btn btn-secondary" onclick="closeEditSourceModal()" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedModal()" >Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+
+<div class="toasts d-flex flex-column gap-1 position-fixed bottom-0 end-0 m-2">
+    <div class="toast align-items-center" id="removeSourceToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Source removed!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="createSourceToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Source created!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="notImplementedToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Sorry but this feature is not yet implemented :(
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+<script src="/js/sources.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        loadSources();
+    });
+</script>

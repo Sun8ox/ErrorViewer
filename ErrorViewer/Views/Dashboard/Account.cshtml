@@ -1,0 +1,244 @@
+@model User
+
+@{
+    ViewData["Title"] = "Manage accounts";
+    Layout = "_DashLayout";
+}
+<script>
+    let username = "@Model.Username";
+    let isAdmin = "@Model.isAdmin";
+</script>
+
+<section class="h-100">
+    <h1>Account</h1>
+    <h4>
+        Manage your account settings.
+    </h4>
+    <div class="d-flex flex-column flex-lg-row w-auto py-4 gap-1">
+        <div class="d-flex flex-column gap-3">
+            <section class="shadow-sm p-2 rounded-3 d-flex flex-column gap-2">
+                <h3>Your account</h3>
+                <input class="form-control" type="text" placeholder="Username" value="Username: @(Model.Username)" readonly>
+                <input class="form-control" type="text" placeholder="Admin: No" value="Admin: @(Model.isAdmin ? "Yes" : "No")" readonly>
+                <input class="form-control" type="text" placeholder="Created at" value="Created at: @(Model.CreatedAt.ToString())" readonly>
+            </section>
+
+            <section class="shadow-sm p-2 rounded-3 d-flex flex-column gap-2">
+                <form method="post" id="changePasswordForm" class="d-flex flex-column gap-2">
+                    <h3>Change password</h3>
+                    <input class="form-control" type="password" name="password" placeholder="Old Password" required>
+                    <input class="form-control" type="password" name="newPassword" placeholder="New Password" min="8" required>
+                    <input class="form-control" type="password" name="passwordVerify" placeholder="Confirm New Password" min="8" required>
+                </form>
+                <div id="changePasswordFormFooter">
+                    <button class="btn btn-primary w-100" onclick="changePassword()">
+                        <i class="bi bi-save"></i>
+                        Save
+                    </button>
+                </div>
+            </section>
+        </div>
+        @if (Model.isAdmin)
+        {
+            <div class="w-100 rounded-3 p-2">
+                <h3>Accounts</h3>
+                <nav>
+                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="bi bi-plus"></i>
+                        Add user
+                    </button>
+                    <button class="btn btn-dark" onclick="loadAccounts()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Refresh
+                    </button>
+                </nav>
+                <table id="accountsTable" class="table mt-2 overflow-scroll">
+                    <thead>
+                    <tr>
+                        <th class="w-25">Username</th>
+                        <th>Is admin</th>
+                        <th>Is blocked</th>
+                        <th class="w-25">Created at</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i = 0; i < 1; i++)
+                    {
+                        <tr>
+                            <td>
+                                admin
+                            </td>
+                            <td>
+                                Yes
+                            </td>
+                            <td>
+                                No
+                            </td>
+                            <td>
+                                2021-10-10
+                            </td>
+                            <td>
+                                <button class="btn btn-dark py-0" onclick="banAccount('admin')">
+                                    <i class="bi bi-x"></i>
+                                    Block
+                                </button>
+                                <button class="btn btn-dark py-0" onclick="editAccount('admin')">
+                                    <i class="bi bi-pencil"></i>
+                                    Edit
+                                </button>
+                                <button class="btn btn-danger py-0" onclick="removeAccount('admin')">
+                                    <i class="bi bi-trash"></i>
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+<div class="modal" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Adding user
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closeAddUserModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <label class="form-label" for="username-am">Username</label>
+                    <input name="username" id="username-am" class="form-control" type="text" placeholder="Username">
+                    <label class="form-label" for="password-am">Password</label>
+                    <input name="password" id="password-am" class="form-control" type="password" placeholder="Password" min="8">
+
+                    <div>
+                        <label class="form-label" for="isAdmin-am">Admin</label>
+                        <input class="form-check-input" name="isAdmin" id="isAdmin-am" type="checkbox"/>
+                        <label class="form-label" for="isBanned-am">Blocked</label>
+                        <input class="form-check-input" name="isBanned" id="isBanned-am" type="checkbox"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeAddUserModal()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="addUserSubmit()">
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Editing user
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closeEditUserModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <label class="form-label" for="username-em">Username</label>
+                    <input name="username" id="username-em" class="form-control" type="text" placeholder="Username" readonly>
+                    <h4 class="form-text">
+                       Username can not be changed. 
+                    </h4>
+                    
+                    <label class="form-label" for="password-em">Password</label>
+                    <input name="passwordToChange" id="password-em" class="form-control" type="password" placeholder="Password">
+
+                    <div>
+                        <label class="form-label" for="isAdmin-em">Admin</label>
+                        <input class="form-check-input" name="isAdmin" id="isAdmin-em" type="checkbox"/>
+                        <label class="form-label" for="isBanned-em">Blocked</label>
+                        <input class="form-check-input" name="isBanned" id="isBanned-em" type="checkbox"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeEditUserModal()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="editUserSubmit()">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toasts d-flex flex-column gap-1 position-fixed bottom-0 end-0 m-2">
+    <div class="toast align-items-center" id="editAccountToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Account edited!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    <div class="toast align-items-center" id="removeAccountToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Account removed!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="banAccountToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Account blocked/unblocked!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="createAccountToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Account created!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="notImplementedToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Sorry but this feature is not yet implemented :(
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="passwordChangedToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Password changed.
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="error" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                An error has occured!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/account.js"></script>

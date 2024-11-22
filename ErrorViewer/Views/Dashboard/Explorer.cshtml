@@ -1,0 +1,74 @@
+@{
+    ViewBag.Title = "Explorer";
+    Layout = "_DashLayout";
+}
+
+<h1>Explorer</h1>
+<h4>Sources</h4>
+<div id="sourcesList" class="w-100 d-flex flex-column gap-2 my-2">
+    <div class="d-flex flex-row justify-content-between">
+        <p>
+            Source
+        </p>
+        <button>
+            <i class="bi bi-arrow-clockwise"></i>
+            Load
+        </button>
+    </div>
+</div>
+
+<div class="w-100 p-2 d-flex flex-row gap-2">
+    <input id="searchInput" type="search" class="form-control w-75" placeholder="Search in errors" name="search">
+    <button id="searchButton" class="btn btn-dark w-auto" onclick="searchInData()">
+        <i class="bi bi-search"></i>
+        Search
+    </button>
+    <button class="btn btn-dark w-auto" onclick="resetSearch()">
+        Reset
+    </button>
+</div>
+
+<h4>Errors: </h4>
+<table id="dataTable" class="table w-100 d-none">
+    <thead>
+    <tr>
+        <th>
+            message
+        </th>
+        <th>
+            id
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            msg1
+        </td>
+        <td>
+            1
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<div class="toasts d-flex flex-column gap-1 position-fixed bottom-0 end-0 m-2">
+    <div class="toast align-items-center" id="getDataFailed" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Could not get data from server!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/sources.js"></script>
+<script src="/js/dataManager.js"></script>
+
+<script>
+    window.addEventListener('load', function () {
+        loadSourcesList();
+    });
+</script>

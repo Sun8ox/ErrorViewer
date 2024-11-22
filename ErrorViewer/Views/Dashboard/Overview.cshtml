@@ -1,0 +1,69 @@
+@{
+    ViewBag.Title = "Overview";
+    Layout = "_DashLayout";
+}
+
+<h1>Overview</h1>
+
+<h4 class="text-muted">
+    Here you can see a brief overview of the errors you have in your sources.
+</h4>
+
+<section>
+    <h4>Sources</h4>
+    <div id="sourcesList" class="d-flex flex-row w-100 overflow-scroll gap-2 my-2">
+        Loading sources...
+    </div>
+</section>
+
+<section>
+    <h4>Top Errors</h4>
+    <div id="errorCounts" class="d-flex flex-row gap-3 w-100 overflow-scroll">
+        No data loaded!
+    </div>
+</section>
+
+<section>
+    <h4>Error counts</h4>
+
+    <!--
+
+    <h4>Search</h4>
+    <div class="w-100 p-2 d-flex flex-row gap-2">
+        <input id="searchInput" type="search" class="form-control w-75" placeholder="Search in errors" name="search">
+        <button id="searchButton" class="btn btn-dark w-auto" onclick="searchInData2()">
+            <i class="bi bi-search"></i>
+            Search
+        </button>
+        <button class="btn btn-dark w-auto" onclick="resetSearch2()">
+            Reset
+        </button>
+    </div>
+
+    -->
+    
+<table id="errorCountsTable" class="table w-100 overflow-scroll">
+        <thead>
+        <tr>
+            <th>Error name</th>
+            <th>Count</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Not loaded</td>
+            <td>0</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<script src="/js/sources.js"></script>
+<script src="/js/dataManager.js"></script>
+<script src="/js/dataAnalyser.js"></script>
+
+<script>
+    window.addEventListener('load', function (){
+        loadSourcesList2();
+    });
+</script>
