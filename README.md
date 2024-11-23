@@ -5,7 +5,7 @@ This project is _**not**_ fully finished and will probably never be but so far i
 
 ## Screenshots:
 ### Overview:  
-"Analyze" errors in databases, csv files and etc. (rn, only csv and counting errors works).  
+"Analyze" errors in databases, csv files and etc. (currently, only csv and counting errors works).  
   
 ![Overview](https://github.com/Sun8ox/ErrorViewer/blob/21f4e449c326c1aa01a772b75bcc25086fe215ea/screenshots/overview.png)
 
