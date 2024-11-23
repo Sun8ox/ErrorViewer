@@ -1,4 +1,3 @@
-using System.Text.Json;
 using ErrorViewer.Data;
 using ErrorViewer.Functions;
 using ErrorViewer.Models;
@@ -61,16 +60,8 @@ public class ApiController : Controller
                 var user = AuthController.loggedInUsers[sessionId];
                 if (user.isBanned) return StatusCode(StatusCodes.Status403Forbidden);
 
-                if (user.isAdmin)
-                {
-                    var sources = SourceManager.sources;
-                    
-                    return Json(sources);
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status401Unauthorized);
-                }
+                var sources = SourceManager.sources;
+                return Json(sources);
             }
         }
 
@@ -78,7 +69,7 @@ public class ApiController : Controller
         return StatusCode(StatusCodes.Status403Forbidden);
     }
 
-    public IActionResult addSource(addSourceModel? model)
+    public IActionResult addSource(Source? model)
     {   
         var sessionId = Request.Cookies[AuthController.cookieName];
 
@@ -88,7 +79,7 @@ public class ApiController : Controller
             {
                 var user = AuthController.loggedInUsers[sessionId];
 
-                if (!user.isAdmin) return StatusCode(StatusCodes.Status401Unauthorized);
+                if (!user.isAdmin) return Json(new SimpleError { error = "NotAdmin" });
                 if (user.isBanned) return StatusCode(StatusCodes.Status403Forbidden);
 
 
@@ -129,6 +120,56 @@ public class ApiController : Controller
         return StatusCode(StatusCodes.Status403Forbidden);
     }
 
+    [HttpPost]
+    public IActionResult editSource(Source? model)
+    {
+        var sessionId = Request.Cookies[AuthController.cookieName];
+
+        if (sessionId != null)
+        {
+            if (AuthController.loggedInUsers.ContainsKey(sessionId))
+            {
+                var user = AuthController.loggedInUsers[sessionId];
+
+                if (!user.isAdmin) return Json(new SimpleError { error = "NotAdmin" });
+                if (user.isBanned) return StatusCode(StatusCodes.Status403Forbidden);
+                
+                if (model != null)
+                {
+                    if (model.Name == null) return Json(new SimpleError { error = "NameIsNull" });
+                    if (model.ConnectionString == null) return Json(new SimpleError { error = "ConStringIsNull" });
+                    if (model.Type == null) return Json(new SimpleError { error = "TypeIsNull" });
+                    if (model.cacheTime == 0) model.cacheTime = 60000;
+                    if (model.errorRow == null) return Json(new SimpleError { error = "ErrorRowIsNull" });
+                    
+                    Source source = SourceManager.sources.Find(source => source.Name == model.Name);
+                    if (source == null) return Json(new SimpleError { error = "NameNotFound" });
+                    
+                    source.ConnectionString = model.ConnectionString;
+                    source.cacheTime = model.cacheTime;
+                    source.errorRow = model.errorRow;
+                    
+                    if (model.Type == "File") 
+                    {
+                        source.Type = "csv";
+                    } else if (model.Type == "RemoteDatabase")
+                    {
+                        source.Type = "RemoteDatabse";
+                    } else if (model.Type == "LocalDatabase")
+                    {
+                        source.Type = "LocalDatabase";
+                    }
+                    
+                    SourceManager.UpdateDatabase(_database);
+                    return Ok();
+                }
+
+            }
+        }
+        
+        return StatusCode(StatusCodes.Status501NotImplemented);
+    }
+
     [HttpDelete("/Api/removeSource/{name}")]
     public IActionResult removeSource(string name)
     {
@@ -140,7 +181,7 @@ public class ApiController : Controller
             {
                 var user = AuthController.loggedInUsers[sessionId];
 
-                if (!user.isAdmin) return StatusCode(StatusCodes.Status401Unauthorized);
+                if (!user.isAdmin) return Json(new SimpleError { error = "NotAdmin" });
                 if (user.isBanned) return StatusCode(StatusCodes.Status403Forbidden);
 
                 if (SourceManager.sources.RemoveAll(source => source.Name == name) > 0)
@@ -158,21 +199,5 @@ public class ApiController : Controller
 
 
         return StatusCode(StatusCodes.Status403Forbidden);
-    }
-    
-    public IActionResult getPlainData()
-    {
-        
-        
-        
-        return NotFound();
-    }
-    
-    public IActionResult getGroupedData()
-    {
-        
-        
-        
-        return NotFound();
     }
 }

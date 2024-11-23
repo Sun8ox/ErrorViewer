@@ -5,6 +5,10 @@
     Layout = "_DashLayout";
 }
 
+<script>
+    let isAdmin = @(Model.isAdmin.ToString().ToLower());
+</script>
+
 <h1>Sources</h1>
 <h4 class="text-muted">
     Add or remove sources to get info from. You can pick from <strong>MySQL</strong>, <strong>SQLite</strong> and <strong>csv</strong>.
@@ -35,18 +39,11 @@
     
     <tbody>
         <tr>
-            <td>Database name</td>
-            <td>Database type</td>
-            <td>30000</td>
-            <td>ecode</td>
-            <td>
-                <button class="btn btn-dark rounded-3 text-white border-0 px-3 py-1">
-                    Edit <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-danger rounded-3 text-white border-0 px-3 py-1">
-                    Remove <i class="bi bi-trash"></i>
-                </button>
-            </td>
+            <td>Loading...</td>
+            <td>Loading...</td>
+            <td>Loading...</td>
+            <td>Loading...</td>
+            <td>Loading...</td>
         </tr>
     </tbody>
 </table>
@@ -68,8 +65,8 @@
 
                     <label for="type-addS" form="type-addS" class="form-label">Source type</label>
                     <select name="Type" id="type-addS" class="form-control mb-3" >
-                        <option value="RemoteDatabase">MySQL</option>
-                        <option value="LocalDatabase">SQLite</option>
+                        <option value="RemoteDatabase">MySQL (Not implemented yet)</option>
+                        <option value="LocalDatabase">SQLite (Not implemented yet)</option>
                         <option value="File" selected>CSV (file)</option>
                     </select>
 
@@ -103,8 +100,6 @@
     </div>
 </div>
     
-    
-    <!-- TODO -->
 <div class="modal" id="editSourceModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -119,16 +114,29 @@
 
                     <label for="type-editS">Source type</label>
                     <select name="Type" id="type-editS" class="form-control mb-3" >
-                        <option value="RemoteDatabase">MySQL</option>
-                        <option value="LocalDatabase">SQLite</option>
-                        <option value="File">CSV (file)</option>
+                        <option value="RemoteDatabase">MySQL (Not implemented yet)</option>
+                        <option value="LocalDatabase">SQLite (Not implemented yet)</option>
+                        <option value="File" selected>CSV (file)</option>
                     </select>
 
-                    <label for="connectionString-editS">Connection string</label>
+                    <label for="connectionString-editS" class="form-label">Connection string</label>
+                    <input type="text" name="ConnectionString" id="connectionString-editS" class="form-control mb-3" placeholder="Connection string">
+
                     <p class="form-text">
                         Learn more about connection strings <a href="/Help/ConnectionStrings" target="_blank">here</a>
                     </p>
-                    <input type="text" name="ConnectionString-editS" class="form-control mb-3" placeholder="Connection string">
+
+                    <label for="errorRow-editS" class="form-label">Error row name</label>
+                    <input type="text" class="form-control" name="errorRow" id="errorRow-editS" placeholder="Error row name" value="ecode">
+                    <p class="form-text">
+                        Which error will be used in analysing the data.
+                    </p>
+
+                    <label for="cacheTime-editS" class="form-label">Cache time</label>
+                    <input id="cacheTime-editS" class="form-control" name="cacheTime" type="number" value="60000" placeholder="Default: 60000">
+                    <p class="form-text">
+                        Time in milliseconds to cache the data
+                    </p>
                 </form>
 
 
@@ -144,10 +152,28 @@
 
 
 <div class="toasts d-flex flex-column gap-1 position-fixed bottom-0 end-0 m-2">
+    <div class="toast align-items-center" id="sourceNotFoundToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Source not found!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    
     <div class="toast align-items-center" id="removeSourceToast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
                 Source removed!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="editSourceToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Source edited!
             </div>
             <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
@@ -170,12 +196,32 @@
             <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
+
+    <div class="toast align-items-center" id="accessDenitedToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Access denied!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div class="toast align-items-center" id="errorToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                An error has occured!
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 </div>
 
 
 <script src="/js/sources.js"></script>
 <script>
+    
     window.addEventListener('load', function () {
         loadSources();
     });
+
 </script>

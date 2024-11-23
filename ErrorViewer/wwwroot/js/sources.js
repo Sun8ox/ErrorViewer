@@ -41,11 +41,11 @@ function createSource() {
         success: function(data) {
             if(data.error != null){
                 if(data.error === "NameExists"){
-                    console.log('Error loading sources!');
+                    console.log('An error has occured while creating source! Source with this name already exists.');
                     $("#addSourceFooter").append("<p class='text-danger' id=\"add-error\">Source with this name already exists.</p>");
                 }
                 else {
-                    console.log('Error loading sources!');
+                    console.log('An error has occured while creating source!');
                     $("#addSourceFooter").append("<p class='text-danger' id=\"add-error\">An error has occured while adding source!</p>");
                 }
                 return;
@@ -62,6 +62,36 @@ function createSource() {
         error: function() {
             console.log('Error adding source!');
             $("#addSourceFooter").append("<p class='text-danger' id=\"add-error\">An error has occured while adding source!</p>");
+        }
+    });
+}
+
+function saveEditedModal() {
+    let form = $("#editSourceForm");
+    
+    const data = form.serialize();
+    $.ajax({
+        url: "/Api/editSource/",
+        method: "POST",
+        data: data,
+        success: function(data) {
+            if(data.error != null){
+                console.log('An error has occured while editing source!');
+                $("#editSourceFooter").append("<p class='text-danger' id=\"edit-error\">An error has occured while editing source!</p>");
+                
+                return;
+            }
+            
+            
+            console.log('Source edited!');
+            showToast("editSourceToast");
+            loadSources();
+            $('#editSourceModal').modal('toggle');
+            $("#editSourceForm").trigger("reset");
+        },
+        error: function() {
+            console.log('An error has occured while editing source!');
+            $("#editSourceFooter").append("<p class='text-danger' id=\"edit-error\">An error has occured while editing source!</p>");
         }
     });
 }
@@ -119,6 +149,7 @@ function loadSourcesList() {
                         ${source.name}
                     </p>
                     <button class="btn btn-dark" onclick="downloadAndLoad('${source.name}')">
+                        <i class="bi bi-cloud-download"></i>
                         Load
                     </button>
                 </div>
@@ -133,6 +164,17 @@ function removeSource(sourceName){
         url: "/Api/removeSource/" + sourceName,
         method: "DELETE",
         success: function(data) {
+            
+            if(data.error != null) {
+                let error = data.error;
+                
+                if(error === "NotAdmin"){
+                    showToast("accessDenitedToast");
+                }
+                
+                return;
+            }
+            
             console.log('Source removed!');
             showToast("removeSourceToast");
             loadSources();
@@ -145,6 +187,28 @@ function removeSource(sourceName){
 
 function editSource(sourceName){
     console.log('Editing source: ' + sourceName);
-    console.log("Not implemented yet!");
-    showToast("notImplementedToast");
+    
+    let modal = $("#editSourceModal");
+    let form = $("#editSourceForm");
+    
+    
+    if(isAdmin === false){
+        showToast("accessDenitedToast"); return;
+    }
+
+    let source = sources.find(source => source.name === sourceName);
+    
+    if(source == null){
+        console.log('Source not found!');
+        showToast("sourceNotFoundToast");
+        return;
+    }
+    
+    form.find("#name-editS").val(sourceName);
+    form.find("#connectionString-editS").val(source.connectionString);
+    
+    form.find("#cacheTime-editS").val(source.cacheTime);
+    form.find("#errorRow-editS").val(source.errorRow);
+    
+    modal.modal("toggle")
 }

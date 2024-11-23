@@ -1,4 +1,3 @@
-using ErrorViewer.Functions;
 using ErrorViewer.Models;
 using Microsoft.EntityFrameworkCore;
 

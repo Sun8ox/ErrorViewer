@@ -59,10 +59,6 @@ function loadDataFiltered() {
         });
     }
 
-    if(table.hasClass("d-none")){
-        table.removeClass("d-none");
-    }
-
     console.log("Data filtered!")
 }
 
@@ -95,10 +91,6 @@ function loadData() {
             });
             tableBody.append("</tr>")
         });
-    }
-    
-    if(table.hasClass("d-none")){
-        table.removeClass("d-none");   
     }
     
     console.log("Data loaded!")

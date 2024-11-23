@@ -8,6 +8,8 @@ function countErrorsAtRow(columnName){
     
     let rowNumber = 0;
     
+    // Javascript can be sometimes so retarted...
+    
     // for row in data: (python)
     // foreach(var row in data){} (C#)
     // for (var row : data){} (Java)
@@ -108,6 +110,7 @@ function loadSourcesList2() {
                         ${source.name}
                     </p>
                     <button class="btn btn-dark" onclick="downloadAndLoad2('${source.name}', '${source.errorRow}')">
+                        <i class="bi bi-cloud-download"></i>
                         Load
                     </button>
                 </div>

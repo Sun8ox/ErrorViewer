@@ -118,8 +118,6 @@ function loadAccounts() {
 
 }
 
-
-// TODO implement
 function banAccount(username) {
     
     $.ajax({
@@ -127,6 +125,24 @@ function banAccount(username) {
         type: "GET",
         success: function(response){
             console.log(response);
+            
+            if(response.error != null) {
+
+                if(response.error === "NotAdmin") {
+                    showToast("accessDenitedToast");
+                } 
+                else if(response.error === "UserBanned") {
+                    showToast("accessDenitedToast");
+                }
+                else if(response.error === "UserNotFound") {
+                    showToast("accountNotFoundToast");
+                }
+                else {
+                    showToast("error");
+                }
+                
+                return;
+            }
             
             showToast("banAccountToast");
             loadAccounts();
@@ -215,6 +231,24 @@ function removeAccount(username) {
         type: "GET",
         success: function(response){
             console.log(response);
+
+            if(response.error != null) {
+
+                if(response.error === "NotAdmin") {
+                    showToast("accessDenitedToast");
+                }
+                else if(response.error === "UserBanned") {
+                    showToast("accessDenitedToast");
+                }
+                else if(response.error === "UserNotFound") {
+                    showToast("accountNotFoundToast");
+                }
+                else {
+                    showToast("error");
+                }
+
+                return;
+            }
 
             showToast("removeAccountToast");
             loadAccounts();
